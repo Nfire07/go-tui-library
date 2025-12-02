@@ -1,0 +1,61 @@
+{
+  "layout": "column",
+  "elements": [
+    {
+      "type": "div",
+      "id": "header",
+      "style": {
+        "background": "#5555ff",
+        "color": "#ffffff",
+        "border": "rounded"
+      },
+      "children": [
+        {
+          "type": "text",
+          "id": "title",
+          "value": "Terminal UI Library Demo",
+          "style": {
+            "color": "#ffffff"
+          }
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "value": "Welcome to the Go TUI Library!",
+      "style": {
+        "color": "#00ff00"
+      }
+    },
+    {
+      "type": "input",
+      "id": "name-input",
+      "label": "Name",
+      "value": "",
+      "style": {
+        "border": "rounded",
+        "color": "#ffffff"
+      }
+    },
+    {
+      "type": "checkbox",
+      "id": "agree-checkbox",
+      "label": "I agree to terms",
+      "checked": false,
+      "style": {
+        "color": "#ffff00"
+      }
+    },
+    {
+      "type": "button",
+      "id": "submit-btn",
+      "label": "Submit",
+      "style": {
+        "border": "double",
+        "color": "#00ffff",
+        "background": "#000055"
+      }
+    }
+  ]
+}
