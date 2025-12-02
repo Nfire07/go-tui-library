@@ -6,14 +6,16 @@ type UIConfig struct {
 }
 
 type Element struct {
-	Type     string    `json:"type"`
-	ID       string    `json:"id"`
-	Label    string    `json:"label,omitempty"`
-	Value    string    `json:"value,omitempty"`
-	Style    Style     `json:"style,omitempty"`
-	Children []Element `json:"children,omitempty"`
-	Width    int       `json:"width,omitempty"`
-	Checked  bool      `json:"checked,omitempty"`
+	Type     string     `json:"type"`
+	ID       string     `json:"id"`
+	Label    string     `json:"label,omitempty"`
+	Value    string     `json:"value,omitempty"`
+	Style    Style      `json:"style,omitempty"`
+	Children []Element  `json:"children,omitempty"`
+	Width    int        `json:"width,omitempty"`
+	Checked  bool       `json:"checked,omitempty"`
+	Headers  []string   `json:"headers,omitempty"`
+	Rows     [][]string `json:"rows,omitempty"`
 }
 
 type Style struct {

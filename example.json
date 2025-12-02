@@ -1,61 +1,38 @@
 {
-  "layout": "column",
+  "layout": "flex",
   "elements": [
+    {
+          "type": "text",
+          "id": "description",
+          "value": "Welcome to the Go TUI Library!",
+          "style": {
+            "color": "#fefefe"
+          }
+    },
     {
       "type": "div",
       "id": "header",
       "style": {
-        "background": "#5555ff",
-        "color": "#ffffff",
+        "color": "#fefefe",
         "border": "rounded"
       },
       "children": [
         {
-          "type": "text",
-          "id": "title",
-          "value": "Terminal UI Library Demo",
+          "type": "table",
+          "id": "data-table",
+          "headers": ["Name", "Age", "City"],
+          "rows": [
+            ["Alice", "30", "New York"],
+            ["Bob", "25", "San Francisco"],
+            ["Charlie", "35", "Seattle"]
+          ],
           "style": {
-            "color": "#ffffff"
+            "border": "rounded",
+            "color": "#fefefe"
           }
         }
+        
       ]
-    },
-    {
-      "type": "text",
-      "id": "description",
-      "value": "Welcome to the Go TUI Library!",
-      "style": {
-        "color": "#00ff00"
-      }
-    },
-    {
-      "type": "input",
-      "id": "name-input",
-      "label": "Name",
-      "value": "",
-      "style": {
-        "border": "rounded",
-        "color": "#ffffff"
-      }
-    },
-    {
-      "type": "checkbox",
-      "id": "agree-checkbox",
-      "label": "I agree to terms",
-      "checked": false,
-      "style": {
-        "color": "#ffff00"
-      }
-    },
-    {
-      "type": "button",
-      "id": "submit-btn",
-      "label": "Submit",
-      "style": {
-        "border": "double",
-        "color": "#00ffff",
-        "background": "#000055"
-      }
     }
   ]
 }

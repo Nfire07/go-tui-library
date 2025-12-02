@@ -35,7 +35,7 @@ func (i *InputElement) HandleKey(key string) {
 			i.cursor++
 		}
 	default:
-		if len(key) == 1 {
+		if len(key) == 1 || key == " " {
 			i.value = i.value[:i.cursor] + key + i.value[i.cursor:]
 			i.cursor++
 		}
@@ -64,9 +64,8 @@ func (i *InputElement) Render(focused bool) string {
 		style = style.BorderForeground(lipgloss.Color("205"))
 	}
 
-	if i.elem.Label != "" {
-		style = style.BorderTop(true).BorderTopForeground(lipgloss.Color("240"))
-	}
+	// render the label as part of the content because Title/BorderTitle is not available
+	// in this version of lipgloss
 
 	displayValue := i.value
 	if focused && i.cursor <= len(i.value) {
@@ -78,9 +77,7 @@ func (i *InputElement) Render(focused bool) string {
 	}
 
 	if i.elem.Label != "" {
-		labelStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-		return labelStyle.Render(i.elem.Label) + "\n" + style.Render(displayValue)
+		displayValue = i.elem.Label + " " + displayValue
 	}
-
 	return style.Render(displayValue)
 }

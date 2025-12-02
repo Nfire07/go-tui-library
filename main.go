@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"go-tui-library/modules/core"
 	"go-tui-library/modules/renderer"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {

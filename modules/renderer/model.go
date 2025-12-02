@@ -56,7 +56,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c":
 			return m, tea.Quit
 		case "tab":
 			m.focusIndex = (m.focusIndex + 1) % len(m.focusableIDs)
@@ -155,6 +155,8 @@ func (m Model) renderElement(elem core.Element, width int) string {
 		return ""
 	case "button":
 		return m.renderButton(elem, focused)
+	case "table":
+		return m.renderTable(elem)
 	default:
 		return ""
 	}
@@ -214,4 +216,59 @@ func (m Model) renderButton(elem core.Element, focused bool) string {
 	}
 
 	return style.Render(label)
+}
+
+func (m Model) renderTable(elem core.Element) string {
+	if len(elem.Headers) == 0 {
+		return ""
+	}
+
+	borderStyle := core.ParseBorderStyle(elem.Style.Border)
+	if elem.Style.Border == "" {
+		borderStyle = lipgloss.NormalBorder()
+	}
+
+	headerStyle := lipgloss.NewStyle().
+		Border(borderStyle).
+		BorderForeground(core.ParseColor(elem.Style.Color)).
+		Padding(0, 1).
+		Bold(true)
+
+	if elem.Style.Color != "" {
+		headerStyle = headerStyle.Foreground(core.ParseColor(elem.Style.Color))
+	}
+	if elem.Style.Background != "" {
+		headerStyle = headerStyle.Background(core.ParseColor(elem.Style.Background))
+	}
+
+	cellStyle := lipgloss.NewStyle().
+		Border(borderStyle).
+		BorderForeground(core.ParseColor(elem.Style.Color)).
+		Padding(0, 1)
+
+	if elem.Style.Color != "" {
+		cellStyle = cellStyle.Foreground(core.ParseColor(elem.Style.Color))
+	}
+
+	var headerRow []string
+	for _, header := range elem.Headers {
+		headerRow = append(headerRow, headerStyle.Render(header))
+	}
+
+	var rows []string
+	rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, headerRow...))
+
+	for _, row := range elem.Rows {
+		var cells []string
+		for i := 0; i < len(elem.Headers); i++ {
+			cellValue := ""
+			if i < len(row) {
+				cellValue = row[i]
+			}
+			cells = append(cells, cellStyle.Render(cellValue))
+		}
+		rows = append(rows, lipgloss.JoinHorizontal(lipgloss.Top, cells...))
+	}
+
+	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }
