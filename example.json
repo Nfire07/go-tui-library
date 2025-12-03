@@ -1,37 +1,64 @@
 {
   "layout": "flex",
+  "flexDirection": "column",
+  "align": "center",
+  "justify": "center",
   "elements": [
     {
-          "type": "text",
-          "id": "description",
-          "value": "Welcome to the Go TUI Library!",
-          "style": {
-            "color": "#fefefe"
-          }
-    },
-    {
       "type": "div",
-      "id": "header",
-      "style": {
-        "color": "#fefefe",
-        "border": "rounded"
+      "id": "content",
+      "layout": "flex",
+      "flexDirection": "column",
+      "align": "center",
+      "justify": "center",
+      "style":{
+        "border":"rounded"
       },
       "children": [
         {
-          "type": "table",
-          "id": "data-table",
-          "headers": ["Name", "Age", "City"],
-          "rows": [
-            ["Alice", "30", "New York"],
-            ["Bob", "25", "San Francisco"],
-            ["Charlie", "35", "Seattle"]
-          ],
+          "type": "text",
+          "id": "form title",
+          "value": "Login"
+        },
+        {
+          "type": "input",
+          "id": "username-input",
+          "label": "Username",
+          "value": "",
           "style": {
             "border": "rounded",
+            "color": "#c2c2c2"
+          }
+        },
+        {
+          "type": "input",
+          "id": "password-input",
+          "label": "Password",
+          "value": "",
+          "style": {
+            "border": "rounded",
+            "color": "#c2c2c2"
+          }
+        },
+        {
+          "type": "checkbox",
+          "id": "agree-checkbox",
+          "label": "I agree to terms",
+          "checked": false,
+          "style": {
             "color": "#fefefe"
           }
+        },
+        {
+          "type": "button",
+          "id": "submit-btn",
+          "label": "Submit",
+          "style": {
+            "border": "double",
+            "color": "#00ffff",
+            "background": "#000055"
+          }
         }
-        
       ]
     }
   ]

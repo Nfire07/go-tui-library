@@ -2,6 +2,7 @@ package elements
 
 import (
 	"go-tui-library/modules/core"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 )
@@ -41,7 +42,6 @@ func (i *InputElement) HandleKey(key string) {
 		}
 	}
 }
-
 func (i *InputElement) Render(focused bool) string {
 	borderStyle := core.ParseBorderStyle(i.elem.Style.Border)
 	if i.elem.Style.Border == "" {
@@ -64,9 +64,6 @@ func (i *InputElement) Render(focused bool) string {
 		style = style.BorderForeground(lipgloss.Color("205"))
 	}
 
-	// render the label as part of the content because Title/BorderTitle is not available
-	// in this version of lipgloss
-
 	displayValue := i.value
 	if focused && i.cursor <= len(i.value) {
 		if i.cursor < len(i.value) {
@@ -77,7 +74,43 @@ func (i *InputElement) Render(focused bool) string {
 	}
 
 	if i.elem.Label != "" {
-		displayValue = i.elem.Label + " " + displayValue
+		labelWidth := len(i.elem.Label) + 2
+		leftPadding := 2
+		rightPadding := style.GetWidth() - labelWidth - leftPadding
+		if rightPadding < 0 {
+			rightPadding = 0
+		}
+
+		topBorder := borderStyle.Top
+		if topBorder == "" {
+			topBorder = "─"
+		}
+
+		topLine := borderStyle.TopLeft +
+			strings.Repeat(topBorder, leftPadding) +
+			" " + i.elem.Label + " " +
+			strings.Repeat(topBorder, rightPadding) +
+			borderStyle.TopRight
+
+		middleLine := borderStyle.Left +
+			" " + displayValue +
+			strings.Repeat(" ", style.GetWidth()-len(displayValue)-2) +
+			" " + borderStyle.Right
+
+		bottomLine := borderStyle.BottomLeft +
+			strings.Repeat(borderStyle.Bottom, style.GetWidth()) +
+			borderStyle.BottomRight
+
+		if focused {
+			borderColor := lipgloss.Color("205")
+			coloredStyle := lipgloss.NewStyle().Foreground(borderColor)
+			topLine = coloredStyle.Render(topLine)
+			middleLine = coloredStyle.Render(middleLine)
+			bottomLine = coloredStyle.Render(bottomLine)
+		}
+
+		return topLine + "\n" + middleLine + "\n" + bottomLine
 	}
+
 	return style.Render(displayValue)
 }

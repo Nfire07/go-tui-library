@@ -163,13 +163,32 @@ func (m Model) renderElement(elem core.Element, width int) string {
 }
 
 func (m Model) renderDiv(elem core.Element, width int) string {
-	var children []string
-	for _, child := range elem.Children {
-		children = append(children, m.renderElement(child, width))
+	layout := elem.Layout
+	if layout == "" {
+		layout = "column"
 	}
-	content := strings.Join(children, "\n")
+
+	var content string
+	if layout == "flex" {
+		flexDir := elem.FlexDir
+		if flexDir == "" {
+			flexDir = "row"
+		}
+		content = m.renderFlexDiv(elem, width, flexDir)
+	} else {
+		var children []string
+		for _, child := range elem.Children {
+			children = append(children, m.renderElement(child, width))
+		}
+		content = strings.Join(children, "\n")
+	}
 
 	style := lipgloss.NewStyle().Width(width)
+
+	if elem.Align != "" {
+		style = m.applyAlign(style, elem.Align)
+	}
+
 	if elem.Style.Color != "" {
 		style = style.Foreground(core.ParseColor(elem.Style.Color))
 	}
@@ -181,6 +200,102 @@ func (m Model) renderDiv(elem core.Element, width int) string {
 	}
 
 	return style.Render(content)
+}
+
+func (m Model) renderFlexDiv(elem core.Element, width int, flexDir string) string {
+	var items []string
+
+	for _, child := range elem.Children {
+		childWidth := width
+		if flexDir == "row" && len(elem.Children) > 0 {
+			childWidth = width / len(elem.Children)
+		}
+		if child.Width > 0 {
+			childWidth = child.Width
+		}
+		rendered := m.renderElement(child, childWidth)
+		items = append(items, rendered)
+	}
+
+	var content string
+	if flexDir == "column" {
+		align := lipgloss.Left
+		if elem.Align == "center" {
+			align = lipgloss.Center
+		} else if elem.Align == "right" || elem.Align == "flex-end" {
+			align = lipgloss.Right
+		}
+		content = lipgloss.JoinVertical(align, items...)
+	} else {
+		align := lipgloss.Top
+		if elem.Align == "center" {
+			align = lipgloss.Center
+		} else if elem.Align == "bottom" || elem.Align == "flex-end" {
+			align = lipgloss.Bottom
+		}
+		content = lipgloss.JoinHorizontal(align, items...)
+	}
+
+	if elem.Justify != "" {
+		content = m.applyJustify(content, elem.Justify, width, flexDir)
+	}
+
+	return content
+}
+
+func (m Model) applyAlign(style lipgloss.Style, align string) lipgloss.Style {
+	switch align {
+	case "center":
+		return style.Align(lipgloss.Center)
+	case "right", "flex-end":
+		return style.Align(lipgloss.Right)
+	case "left", "flex-start":
+		return style.Align(lipgloss.Left)
+	default:
+		return style
+	}
+}
+
+func (m Model) applyJustify(content string, justify string, width int, flexDir string) string {
+	contentWidth := lipgloss.Width(content)
+	contentHeight := lipgloss.Height(content)
+
+	if flexDir == "row" {
+		switch justify {
+		case "center":
+			padding := (width - contentWidth) / 2
+			if padding > 0 {
+				return lipgloss.NewStyle().PaddingLeft(padding).Render(content)
+			}
+		case "flex-end", "right":
+			padding := width - contentWidth
+			if padding > 0 {
+				return lipgloss.NewStyle().PaddingLeft(padding).Render(content)
+			}
+		case "space-between":
+			return lipgloss.NewStyle().Width(width).Render(content)
+		case "space-around":
+			padding := (width - contentWidth) / 2
+			if padding > 0 {
+				return lipgloss.NewStyle().PaddingLeft(padding).PaddingRight(padding).Render(content)
+			}
+		}
+	} else {
+		switch justify {
+		case "center":
+			padding := (m.height - contentHeight) / 2
+			if padding > 0 {
+				return lipgloss.NewStyle().PaddingTop(padding).Render(content)
+			}
+		case "flex-end", "bottom":
+			padding := m.height - contentHeight
+			if padding > 0 {
+				return lipgloss.NewStyle().PaddingTop(padding).Render(content)
+			}
+		}
+	}
+
+	return content
 }
 
 func (m Model) renderText(elem core.Element) string {

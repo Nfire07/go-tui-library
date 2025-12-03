@@ -16,6 +16,10 @@ type Element struct {
 	Checked  bool       `json:"checked,omitempty"`
 	Headers  []string   `json:"headers,omitempty"`
 	Rows     [][]string `json:"rows,omitempty"`
+	Layout   string     `json:"layout,omitempty"`
+	FlexDir  string     `json:"flexDirection,omitempty"`
+	Align    string     `json:"align,omitempty"`
+	Justify  string     `json:"justify,omitempty"`
 }
 
 type Style struct {
