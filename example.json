@@ -11,23 +11,31 @@
       "flexDirection": "column",
       "align": "center",
       "justify": "center",
-      "style":{
-        "border":"rounded"
+      "width": 178,
+      "height": 44,
+      "style": {
+        "border": "rounded"
       },
       "children": [
         {
           "type": "text",
-          "id": "form title",
-          "value": "Login"
+          "id": "form-title",
+          "value": "Login",
+          "style": {
+            "color": "#fefefe"
+          }
         },
         {
           "type": "input",
           "id": "username-input",
           "label": "Username",
           "value": "",
+          "width": 40,
+          "inputType": "text",
           "style": {
             "border": "rounded",
-            "color": "#c2c2c2"
+            "color": "#c2c2c2",
+            "background": "#121212"
           }
         },
         {
@@ -35,6 +43,21 @@
           "id": "password-input",
           "label": "Password",
           "value": "",
+          "width": 40,
+          "inputType": "password",
+          "style": {
+            "border": "rounded",
+            "color": "#c2c2c2",
+            "background": "#121212"
+          }
+        },
+        {
+          "type": "input",
+          "id": "cvd-input",
+          "label": "cvd",
+          "value": "pls",
+          "width": 20,
+          "inputType": "number",
           "style": {
             "border": "rounded",
             "color": "#c2c2c2"
@@ -53,10 +76,10 @@
           "type": "button",
           "id": "submit-btn",
           "label": "Submit",
+          "width": 50,
           "style": {
-            "border": "double",
-            "color": "#00ffff",
-            "background": "#000055"
+            "border": "rounded",
+            "color": "#fefefe"
           }
         }
       ]

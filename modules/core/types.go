@@ -6,20 +6,22 @@ type UIConfig struct {
 }
 
 type Element struct {
-	Type     string     `json:"type"`
-	ID       string     `json:"id"`
-	Label    string     `json:"label,omitempty"`
-	Value    string     `json:"value,omitempty"`
-	Style    Style      `json:"style,omitempty"`
-	Children []Element  `json:"children,omitempty"`
-	Width    int        `json:"width,omitempty"`
-	Checked  bool       `json:"checked,omitempty"`
-	Headers  []string   `json:"headers,omitempty"`
-	Rows     [][]string `json:"rows,omitempty"`
-	Layout   string     `json:"layout,omitempty"`
-	FlexDir  string     `json:"flexDirection,omitempty"`
-	Align    string     `json:"align,omitempty"`
-	Justify  string     `json:"justify,omitempty"`
+	Type      string     `json:"type"`
+	ID        string     `json:"id"`
+	Label     string     `json:"label,omitempty"`
+	Value     string     `json:"value,omitempty"`
+	Style     Style      `json:"style,omitempty"`
+	Children  []Element  `json:"children,omitempty"`
+	Width     int        `json:"width,omitempty"`
+	Height    int        `json:"height,omitempty"`
+	Checked   bool       `json:"checked,omitempty"`
+	Headers   []string   `json:"headers,omitempty"`
+	Rows      [][]string `json:"rows,omitempty"`
+	Layout    string     `json:"layout,omitempty"`
+	FlexDir   string     `json:"flexDirection,omitempty"`
+	Align     string     `json:"align,omitempty"`
+	Justify   string     `json:"justify,omitempty"`
+	InputType string     `json:"inputType,omitempty"`
 }
 
 type Style struct {

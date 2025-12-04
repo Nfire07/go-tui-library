@@ -162,10 +162,22 @@ func (m Model) renderElement(elem core.Element, width int) string {
 	}
 }
 
-func (m Model) renderDiv(elem core.Element, width int) string {
+func (m Model) renderDiv(elem core.Element, parentWidth int) string {
 	layout := elem.Layout
 	if layout == "" {
 		layout = "column"
+	}
+
+	// Use explicit width if provided, otherwise use parent width
+	width := parentWidth
+	if elem.Width > 0 {
+		width = elem.Width
+	}
+
+	// Use explicit height if provided
+	height := 0
+	if elem.Height > 0 {
+		height = elem.Height
 	}
 
 	var content string
@@ -183,7 +195,17 @@ func (m Model) renderDiv(elem core.Element, width int) string {
 		content = strings.Join(children, "\n")
 	}
 
-	style := lipgloss.NewStyle().Width(width)
+	style := lipgloss.NewStyle()
+
+	// Apply width
+	if width > 0 {
+		style = style.Width(width)
+	}
+
+	// Apply height
+	if height > 0 {
+		style = style.Height(height)
+	}
 
 	if elem.Align != "" {
 		style = m.applyAlign(style, elem.Align)
@@ -208,8 +230,10 @@ func (m Model) renderFlexDiv(elem core.Element, width int, flexDir string) strin
 	for _, child := range elem.Children {
 		childWidth := width
 		if flexDir == "row" && len(elem.Children) > 0 {
+			// Distribute width among children
 			childWidth = width / len(elem.Children)
 		}
+		// Override with explicit child width if provided
 		if child.Width > 0 {
 			childWidth = child.Width
 		}
@@ -237,7 +261,7 @@ func (m Model) renderFlexDiv(elem core.Element, width int, flexDir string) strin
 	}
 
 	if elem.Justify != "" {
-		content = m.applyJustify(content, elem.Justify, width, flexDir)
+		content = m.applyJustify(content, elem.Justify, width, flexDir, elem.Height)
 	}
 
 	return content
@@ -256,9 +280,15 @@ func (m Model) applyAlign(style lipgloss.Style, align string) lipgloss.Style {
 	}
 }
 
-func (m Model) applyJustify(content string, justify string, width int, flexDir string) string {
+func (m Model) applyJustify(content string, justify string, width int, flexDir string, elemHeight int) string {
 	contentWidth := lipgloss.Width(content)
 	contentHeight := lipgloss.Height(content)
+
+	// Use element height if provided, otherwise use screen height
+	targetHeight := m.height
+	if elemHeight > 0 {
+		targetHeight = elemHeight
+	}
 
 	if flexDir == "row" {
 		switch justify {
@@ -283,12 +313,12 @@ func (m Model) applyJustify(content string, justify string, width int, flexDir s
 	} else {
 		switch justify {
 		case "center":
-			padding := (m.height - contentHeight) / 2
+			padding := (targetHeight - contentHeight) / 2
 			if padding > 0 {
 				return lipgloss.NewStyle().PaddingTop(padding).Render(content)
 			}
 		case "flex-end", "bottom":
-			padding := m.height - contentHeight
+			padding := targetHeight - contentHeight
 			if padding > 0 {
 				return lipgloss.NewStyle().PaddingTop(padding).Render(content)
 			}
@@ -300,6 +330,17 @@ func (m Model) applyJustify(content string, justify string, width int, flexDir s
 
 func (m Model) renderText(elem core.Element) string {
 	style := lipgloss.NewStyle()
+
+	// Apply width if specified
+	if elem.Width > 0 {
+		style = style.Width(elem.Width)
+	}
+
+	// Apply height if specified
+	if elem.Height > 0 {
+		style = style.Height(elem.Height)
+	}
+
 	if elem.Style.Color != "" {
 		style = style.Foreground(core.ParseColor(elem.Style.Color))
 	}
@@ -313,6 +354,16 @@ func (m Model) renderButton(elem core.Element, focused bool) string {
 	style := lipgloss.NewStyle().
 		Padding(0, 2).
 		Border(core.ParseBorderStyle(elem.Style.Border))
+
+	// Apply width if specified
+	if elem.Width > 0 {
+		style = style.Width(elem.Width)
+	}
+
+	// Apply height if specified
+	if elem.Height > 0 {
+		style = style.Height(elem.Height)
+	}
 
 	if elem.Style.Color != "" {
 		style = style.Foreground(core.ParseColor(elem.Style.Color))

@@ -8,15 +8,21 @@ import (
 )
 
 type InputElement struct {
-	elem   core.Element
-	value  string
-	cursor int
+	elem      core.Element
+	value     string
+	cursor    int
+	inputType string // "text", "password", "number"
 }
 
 func NewInputElement(elem core.Element) *InputElement {
+	inputType := elem.InputType
+	if inputType == "" {
+		inputType = "text"
+	}
 	return &InputElement{
-		elem:  elem,
-		value: elem.Value,
+		elem:      elem,
+		value:     elem.Value,
+		inputType: inputType,
 	}
 }
 
@@ -36,22 +42,35 @@ func (i *InputElement) HandleKey(key string) {
 			i.cursor++
 		}
 	default:
-		if len(key) == 1 || key == " " {
+		// For number input type, only allow digits and minus sign
+		if i.inputType == "number" {
+			if (key >= "0" && key <= "9") || (key == "-" && i.cursor == 0) {
+				i.value = i.value[:i.cursor] + key + i.value[i.cursor:]
+				i.cursor++
+			}
+		} else if len(key) == 1 || key == " " {
 			i.value = i.value[:i.cursor] + key + i.value[i.cursor:]
 			i.cursor++
 		}
 	}
 }
+
 func (i *InputElement) Render(focused bool) string {
 	borderStyle := core.ParseBorderStyle(i.elem.Style.Border)
 	if i.elem.Style.Border == "" {
 		borderStyle = lipgloss.RoundedBorder()
 	}
 
+	// Use width from element config or default to 30
+	width := 30
+	if i.elem.Width > 0 {
+		width = i.elem.Width
+	}
+
 	style := lipgloss.NewStyle().
 		Border(borderStyle).
 		Padding(0, 1).
-		Width(30)
+		Width(width)
 
 	if i.elem.Style.Color != "" {
 		style = style.Foreground(core.ParseColor(i.elem.Style.Color))
@@ -64,19 +83,24 @@ func (i *InputElement) Render(focused bool) string {
 		style = style.BorderForeground(lipgloss.Color("205"))
 	}
 
+	// Display value based on input type
 	displayValue := i.value
+	if i.inputType == "password" && len(i.value) > 0 {
+		displayValue = strings.Repeat("*", len(i.value))
+	}
+
 	if focused && i.cursor <= len(i.value) {
-		if i.cursor < len(i.value) {
-			displayValue = i.value[:i.cursor] + "│" + i.value[i.cursor:]
+		if i.cursor < len(displayValue) {
+			displayValue = displayValue[:i.cursor] + "│" + displayValue[i.cursor:]
 		} else {
-			displayValue = i.value + "│"
+			displayValue = displayValue + "│"
 		}
 	}
 
 	if i.elem.Label != "" {
 		labelWidth := len(i.elem.Label) + 2
 		leftPadding := 2
-		rightPadding := style.GetWidth() - labelWidth - leftPadding
+		rightPadding := width - labelWidth - leftPadding
 		if rightPadding < 0 {
 			rightPadding = 0
 		}
@@ -92,13 +116,20 @@ func (i *InputElement) Render(focused bool) string {
 			strings.Repeat(topBorder, rightPadding) +
 			borderStyle.TopRight
 
+		// Ensure proper padding within input field
+		valueLen := len(displayValue)
+		if valueLen > width-2 {
+			displayValue = displayValue[:width-2]
+			valueLen = width - 2
+		}
+
 		middleLine := borderStyle.Left +
 			" " + displayValue +
-			strings.Repeat(" ", style.GetWidth()-len(displayValue)-2) +
+			strings.Repeat(" ", width-valueLen-2) +
 			" " + borderStyle.Right
 
 		bottomLine := borderStyle.BottomLeft +
-			strings.Repeat(borderStyle.Bottom, style.GetWidth()) +
+			strings.Repeat(borderStyle.Bottom, width) +
 			borderStyle.BottomRight
 
 		if focused {
